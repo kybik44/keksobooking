@@ -1,7 +1,7 @@
 # Личный проект «Кексобукинг» [![Build status][travis-image]][travis-url]
 
 * Студент: [Макс Поляков](https://up.htmlacademy.ru/javascript/16/user/664495).
-* Наставник: `Неизвестно`.
+* Наставник: [Максим Лыков](https://htmlacademy.ru/profile/id529621).
 
 ---
 
