@@ -100,7 +100,8 @@ var renderMapPins = function (mapArea, apartments) {
     var mapPinElement = initMapPin(mapPinTemplate, apartments[i]);
 
     mapPinElement.addEventListener('click', function (evt) {
-      renderCard(mapArea, apartments[evt.target.dataset.key]);
+      var key = evt.currentTarget.dataset.key;
+      renderCard(mapArea, apartments[key]);
     });
 
     fragment.appendChild(mapPinElement);
@@ -201,6 +202,12 @@ var deactivateAdForm = function (disabled) {
   var header = adForm.querySelector('.ad-form-header');
   var fieldsets = adForm.querySelectorAll('.ad-form__element');
 
+  if (disabled) {
+    adForm.classList.add('ad-form--disabled');
+  } else {
+    adForm.classList.remove('ad-form--disabled');
+  }
+
   header.disabled = disabled;
 
   for (var i = 0; i < fieldsets.length; i++) {
@@ -247,15 +254,13 @@ var initialize = function () {
 
   deactivateMap();
   deactivateAdForm();
-
-  renderMapPins(mapArea, apartments);
-  renderCard(mapArea, apartments[0]);
   setAddressField(getMapPinLocation(true));
 
   mapPinMain.addEventListener('mouseup', function () {
     activateMap();
     activateAdForm();
     setAddressField(getMapPinLocation());
+    renderMapPins(mapArea, apartments);
   });
 };
 
