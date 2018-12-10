@@ -347,6 +347,7 @@ var initAdForm = function () {
     adForm.reset();
     typeSelect.dispatchEvent(new Event('change', {}));
     setAddressField(getMapPinLocation());
+    capacitySelect.setCustomValidity('');
   });
 };
 
