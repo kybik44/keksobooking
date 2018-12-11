@@ -12,7 +12,6 @@ var OFFER_TITLE_EXAMPLES = [
   'Уютное бунгало далеко от моря',
   'Неуютное бунгало по колено в воде'
 ];
-var OFFER_TYPE_EXAMPLES = ['bungalo', 'flat', 'house', 'palace'];
 var OFFER_TYPE_DISPLAY_NAMES = {
   'bungalo': 'Бунгало',
   'flat': 'Квартира',
@@ -78,7 +77,7 @@ var mockApartments = function (areaWidth) {
     apartment.offer.title = OFFER_TITLE_EXAMPLES[i];
     apartment.offer.address = apartment.location.x + ', ' + apartment.location.y;
     apartment.offer.price = getRandomValueFromRange(1000, 1000000);
-    apartment.offer.type = getRandomValueFromArray(OFFER_TYPE_EXAMPLES);
+    apartment.offer.type = getRandomValueFromArray(Object.keys(OFFER_TYPE_DISPLAY_NAMES));
     apartment.offer.rooms = getRandomValueFromRange(1, 5);
     apartment.offer.guests = getRandomValueFromRange(1, 10);
     apartment.offer.checkin = getRandomValueFromArray(OFFER_TIME_EXAMPLES);
@@ -265,17 +264,12 @@ var initMap = function () {
   var apartments = mockApartments(mapArea.offsetWidth);
 
   mapArea.addEventListener('click', function (evt) {
-    var target = evt.target;
-
-    while (target !== mapArea) {
-      if (target.classList.contains('map__pin')) {
-        var key = target.dataset.key;
-        if (key) {
-          renderCard(mapArea, apartments[key]);
-        }
-        return;
+    var mapPin = evt.target.closest('.map__pin:not(.map__pin--main)');
+    if (mapPin) {
+      var key = mapPin.dataset.key;
+      if (key) {
+        renderCard(mapArea, apartments[key]);
       }
-      target = target.parentNode;
     }
   });
 
@@ -304,43 +298,27 @@ var initAdForm = function () {
     priceInput.placeholder = OFFER_TYPE_MIN_PRICE[evt.target.value];
   });
 
-  timeinSelect.addEventListener('change', function (evt) {
-    for (var i = 0; i < timeoutSelect.options.length; i++) {
-      var option = timeoutSelect.options[i];
-      if (evt.target.value === option.value) {
-        option.selected = true;
-      }
-    }
-  });
-
-  timeoutSelect.addEventListener('change', function (evt) {
-    for (var i = 0; i < timeinSelect.options.length; i++) {
-      var option = timeinSelect.options[i];
-      if (evt.target.value === option.value) {
-        option.selected = true;
-      }
-    }
-  });
-
-  var checkCapacity = function (rooms, capacity) {
-    var validCapacityArray = ADFORM_ROOM_CAPACITY_MAPPING[rooms];
-    if (validCapacityArray.indexOf(capacity) === -1) {
-      return ADFORM_ROOM_CAPACITY_HINT[rooms];
-    }
-    return '';
+  var syncTimeSelects = function (evt) {
+    timeoutSelect.value = timeinSelect.value = evt.target.value;
   };
 
-  roomNumberSelect.addEventListener('change', function (evt) {
-    var rooms = evt.target.value;
-    var capacity = capacitySelect.value;
-    capacitySelect.setCustomValidity(checkCapacity(rooms, capacity));
-  });
+  timeinSelect.addEventListener('change', syncTimeSelects);
+  timeoutSelect.addEventListener('change', syncTimeSelects);
 
-  capacitySelect.addEventListener('change', function (evt) {
+  var validateCapacity = function () {
     var rooms = roomNumberSelect.value;
-    var capacity = evt.target.value;
-    capacitySelect.setCustomValidity(checkCapacity(rooms, capacity));
-  });
+    var capacity = capacitySelect.value;
+    var validCapacityArray = ADFORM_ROOM_CAPACITY_MAPPING[rooms];
+
+    if (validCapacityArray.indexOf(capacity) === -1) {
+      capacitySelect.setCustomValidity(ADFORM_ROOM_CAPACITY_HINT[rooms]);
+    } else {
+      capacitySelect.setCustomValidity('');
+    }
+  };
+
+  roomNumberSelect.addEventListener('change', validateCapacity);
+  capacitySelect.addEventListener('change', validateCapacity);
 
   adFormReset.addEventListener('click', function (e) {
     e.preventDefault();
