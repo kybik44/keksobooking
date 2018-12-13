@@ -1,6 +1,8 @@
 'use strict';
 
-var MAP_PIN_ARROW_HEIGHT = 22;
+var MAP_PIN_HEIGHT = 70;
+var MAP_PIN_WIDTH = 50;
+var MAP_PIN_MAIN_ARROW_HEIGHT = 16;
 var MAP_PIN_TOP_INITIAL = 375;
 var MAP_PIN_LEFT_INITIAL = 570;
 var MAP_PIN_TOP_MIN = 130;
@@ -99,8 +101,8 @@ var mockApartments = function (areaWidth) {
 var initMapPin = function (template, apartment) {
   var mapPinElement = template.cloneNode(true);
 
-  mapPinElement.style.left = apartment.location.x - mapPinElement.offsetWidth / 2 + 'px';
-  mapPinElement.style.top = apartment.location.y - mapPinElement.offsetHeight + 'px';
+  mapPinElement.style.left = apartment.location.x - MAP_PIN_WIDTH / 2 + 'px';
+  mapPinElement.style.top = apartment.location.y - MAP_PIN_HEIGHT + 'px';
   mapPinElement.querySelector('img').src = apartment.author.avatar;
   mapPinElement.dataset.key = apartment.key;
 
@@ -286,6 +288,7 @@ var activateMap = function (callback) {
 var getMapPinLocation = function (initialState) {
   var mapPinMain = document.querySelector('.map__pin--main');
 
+  // в начальном состоянии (карта неактивна), у главной метки нет стрелки, поэтому за координаты берём середину метки
   if (initialState) {
     return {
       x: Math.round(mapPinMain.offsetLeft + mapPinMain.offsetWidth / 2),
@@ -294,7 +297,7 @@ var getMapPinLocation = function (initialState) {
   } else {
     return {
       x: Math.round(mapPinMain.offsetLeft + mapPinMain.offsetWidth / 2),
-      y: Math.round(mapPinMain.offsetTop + mapPinMain.offsetHeight + MAP_PIN_ARROW_HEIGHT)
+      y: Math.round(mapPinMain.offsetTop + mapPinMain.offsetHeight + MAP_PIN_MAIN_ARROW_HEIGHT)
     };
   }
 };
@@ -344,6 +347,7 @@ var initMap = function () {
         y: mapPinMain.offsetTop - shift.y
       };
 
+      // вычисляем границы области, где можно поставить метку
       var minY = MAP_PIN_TOP_MIN;
       var maxY = MAP_PIN_TOP_MAX;
       var minX = 0 - mapPinMain.offsetWidth / 2;
