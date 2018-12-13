@@ -1,6 +1,12 @@
 'use strict';
 
-var MAP_PIN_ARROW_HEIGHT = 22;
+var MAP_PIN_HEIGHT = 70;
+var MAP_PIN_WIDTH = 50;
+var MAP_PIN_MAIN_ARROW_HEIGHT = 16;
+var MAP_PIN_TOP_INITIAL = 375;
+var MAP_PIN_LEFT_INITIAL = 570;
+var MAP_PIN_TOP_MIN = 130;
+var MAP_PIN_TOP_MAX = 630;
 
 var OFFER_TITLE_EXAMPLES = [
   'Большая уютная квартира',
@@ -95,25 +101,29 @@ var mockApartments = function (areaWidth) {
 var initMapPin = function (template, apartment) {
   var mapPinElement = template.cloneNode(true);
 
-  mapPinElement.style.left = apartment.location.x - mapPinElement.offsetWidth / 2 + 'px';
-  mapPinElement.style.top = apartment.location.y - mapPinElement.offsetHeight + 'px';
+  mapPinElement.style.left = apartment.location.x - MAP_PIN_WIDTH / 2 + 'px';
+  mapPinElement.style.top = apartment.location.y - MAP_PIN_HEIGHT + 'px';
   mapPinElement.querySelector('img').src = apartment.author.avatar;
   mapPinElement.dataset.key = apartment.key;
 
   return mapPinElement;
 };
 
-var renderMapPins = function (mapArea, apartments) {
+var removeMapPins = function () {
   var existingMapPins = document.querySelectorAll('.map__pin:not(.map__pin--main)');
-  var mapPinTemplate = document.querySelector('#pin').content.querySelector('.map__pin');
-  var fragment = document.createDocumentFragment();
-
-  // remove existing pins
   for (var i = 0; i < existingMapPins.length; i++) {
     existingMapPins[i].remove();
   }
+  removeCard();
+};
 
-  for (i = 0; i < apartments.length; i++) {
+var renderMapPins = function (mapArea, apartments) {
+  var mapPinTemplate = document.querySelector('#pin').content.querySelector('.map__pin');
+  var fragment = document.createDocumentFragment();
+
+  removeMapPins();
+
+  for (var i = 0; i < apartments.length; i++) {
     var mapPinElement = initMapPin(mapPinTemplate, apartments[i]);
     fragment.appendChild(mapPinElement);
   }
@@ -188,14 +198,18 @@ var initCard = function (template, apartment) {
   return cardElement;
 };
 
-var renderCard = function (mapArea, apartment) {
+var removeCard = function () {
   var existingMapCard = document.querySelector('.map__card');
-  var cardTemplate = document.querySelector('#card').content.querySelector('.popup');
-  var cardElement = initCard(cardTemplate, apartment);
-
   if (existingMapCard) {
     existingMapCard.remove();
   }
+};
+
+var renderCard = function (mapArea, apartment) {
+  var cardTemplate = document.querySelector('#card').content.querySelector('.popup');
+  var cardElement = initCard(cardTemplate, apartment);
+
+  removeCard();
 
   cardElement.querySelector('.popup__close').addEventListener('click', function () {
     cardElement.remove();
@@ -204,11 +218,7 @@ var renderCard = function (mapArea, apartment) {
   mapArea.insertBefore(cardElement, mapArea.querySelector('.map__filters-container'));
 };
 
-var deactivateAdForm = function (disabled) {
-  if (typeof disabled === 'undefined') {
-    disabled = true;
-  }
-
+var changeAdFormState = function (disabled) {
   var adForm = document.querySelector('.ad-form');
   var header = adForm.querySelector('.ad-form-header');
   var fieldsets = adForm.querySelectorAll('.ad-form__element');
@@ -226,21 +236,59 @@ var deactivateAdForm = function (disabled) {
   }
 };
 
+var deactivateAdForm = function () {
+  if (window.adFormActive === false) {
+    return;
+  }
+  window.adFormActive = false;
+  changeAdFormState(true);
+};
+
 var activateAdForm = function () {
-  deactivateAdForm(false);
+  if (window.adFormActive === true) {
+    return;
+  }
+  window.adFormActive = true;
+  changeAdFormState(false);
 };
 
-var deactivateMap = function () {
-  document.querySelector('.map').classList.add('map--faded');
+var deactivateMap = function (callback) {
+  if (window.mapActive === false) {
+    return;
+  }
+
+  window.mapActive = false;
+
+  var map = document.querySelector('.map');
+  var mapPinMain = map.querySelector('.map__pin--main');
+
+  map.classList.add('map--faded');
+  mapPinMain.style.top = MAP_PIN_TOP_INITIAL + 'px';
+  mapPinMain.style.left = MAP_PIN_LEFT_INITIAL + 'px';
+
+  if (typeof callback === 'function') {
+    callback();
+  }
 };
 
-var activateMap = function () {
+var activateMap = function (callback) {
+  if (window.mapActive) {
+    return;
+  }
+
+  window.mapActive = true;
+
   document.querySelector('.map').classList.remove('map--faded');
+
+  if (typeof callback === 'function') {
+    callback();
+  }
 };
 
 var getMapPinLocation = function (initialState) {
   var mapPinMain = document.querySelector('.map__pin--main');
 
+  // в начальном состоянии (карта неактивна), у главной метки нет стрелки, поэтому за координаты берём середину метки
   if (initialState) {
     return {
       x: Math.round(mapPinMain.offsetLeft + mapPinMain.offsetWidth / 2),
@@ -249,7 +297,7 @@ var getMapPinLocation = function (initialState) {
   } else {
     return {
       x: Math.round(mapPinMain.offsetLeft + mapPinMain.offsetWidth / 2),
-      y: Math.round(mapPinMain.offsetTop + mapPinMain.offsetHeight + MAP_PIN_ARROW_HEIGHT)
+      y: Math.round(mapPinMain.offsetTop + mapPinMain.offsetHeight + MAP_PIN_MAIN_ARROW_HEIGHT)
     };
   }
 };
@@ -273,11 +321,68 @@ var initMap = function () {
     }
   });
 
-  mapPinMain.addEventListener('mouseup', function () {
-    activateMap();
-    renderMapPins(mapArea, apartments);
-    activateAdForm();
-    setAddressField(getMapPinLocation());
+  mapPinMain.addEventListener('mousedown', function (evt) {
+    evt.preventDefault();
+
+    var startCoords = {
+      x: evt.clientX,
+      y: evt.clientY
+    };
+
+    var onMouseMove = function (moveEvt) {
+      moveEvt.preventDefault();
+
+      var shift = {
+        x: startCoords.x - moveEvt.clientX,
+        y: startCoords.y - moveEvt.clientY
+      };
+
+      startCoords = {
+        x: moveEvt.x,
+        y: moveEvt.y
+      };
+
+      var newCoords = {
+        x: mapPinMain.offsetLeft - shift.x,
+        y: mapPinMain.offsetTop - shift.y
+      };
+
+      // вычисляем границы области, где можно поставить метку
+      var minY = MAP_PIN_TOP_MIN;
+      var maxY = MAP_PIN_TOP_MAX;
+      var minX = 0 - mapPinMain.offsetWidth / 2;
+      var maxX = mapArea.offsetWidth - mapPinMain.offsetWidth / 2;
+
+      if (newCoords.y >= minY && newCoords.y <= maxY) {
+        mapPinMain.style.top = newCoords.y + 'px';
+      }
+
+      if (newCoords.x >= minX && newCoords.x <= maxX) {
+        mapPinMain.style.left = newCoords.x + 'px';
+      }
+
+      activateMap(function () {
+        renderMapPins(mapArea, apartments);
+      });
+      activateAdForm();
+      setAddressField(getMapPinLocation());
+    };
+
+    var onMouseUp = function (upEvt) {
+      upEvt.preventDefault();
+
+      activateMap(function () {
+        renderMapPins(mapArea, apartments);
+      });
+      activateAdForm();
+      setAddressField(getMapPinLocation());
+
+      document.removeEventListener('mousemove', onMouseMove);
+      document.removeEventListener('mouseup', onMouseUp);
+    };
+
+    document.addEventListener('mousemove', onMouseMove);
+    document.addEventListener('mouseup', onMouseUp);
   });
 };
 
@@ -326,6 +431,9 @@ var initAdForm = function () {
     typeSelect.dispatchEvent(new Event('change', {}));
     setAddressField(getMapPinLocation());
     capacitySelect.setCustomValidity('');
+
+    deactivateMap(removeMapPins);
+    deactivateAdForm();
   });
 };
 
