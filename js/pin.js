@@ -1,8 +1,16 @@
 'use strict';
 
+/**
+ * Модуль Pin
+ *
+ * Управление метками на карте
+ * @param Pin.removePins - удаление всех меток с карты
+ * @param Pin.renderPins - отрисовка меток на карте
+ * @param Pin.activate - активация метки
+ * @param Pin.deactivatePins - деактивация всех меток на карте
+ * @param Pin.getMainPinLocation - получение координат главной метки
+ */
 (function () {
-  window.Pin = {};
-
   var mapPinTemplate = document.querySelector('#pin').content.querySelector('.map__pin');
 
   var initPin = function (apartment) {
@@ -16,14 +24,14 @@
     return mapPinElement;
   };
 
-  window.Pin.removePins = function () {
+  var removePins = function () {
     var mapPinElements = document.querySelectorAll('.map__pin:not(.map__pin--main)');
     for (var i = 0; i < mapPinElements.length; i++) {
       mapPinElements[i].remove();
     }
   };
 
-  window.Pin.renderPins = function (map, apartments) {
+  var renderPins = function (map, apartments) {
     window.Pin.removePins();
 
     var fragment = document.createDocumentFragment();
@@ -36,7 +44,7 @@
     map.appendChild(fragment);
   };
 
-  window.Pin.activate = function (pin, callback) {
+  var activatePin = function (pin, callback) {
     window.Pin.deactivatePins();
     pin.classList.add('map__pin--active');
     if (typeof callback === 'function') {
@@ -44,14 +52,14 @@
     }
   };
 
-  window.Pin.deactivatePins = function () {
+  var deactivatePins = function () {
     var mapPinActiveElements = document.querySelectorAll('.map__pin--active');
     for (var i = 0; i < mapPinActiveElements.length; i++) {
       mapPinActiveElements[i].classList.remove('map__pin--active');
     }
   };
 
-  window.Pin.getMainPinLocation = function (initialState) {
+  var getMainPinLocation = function (initialState) {
     var mapPinMain = document.querySelector('.map__pin--main');
 
     var location = {
@@ -66,5 +74,13 @@
     }
 
     return location;
+  };
+
+  window.Pin = {
+    removePins: removePins,
+    renderPins: renderPins,
+    activate: activatePin,
+    deactivatePins: deactivatePins,
+    getMainPinLocation: getMainPinLocation
   };
 })();

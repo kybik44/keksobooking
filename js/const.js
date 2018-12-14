@@ -1,5 +1,21 @@
 'use strict';
 
+/**
+ * Модуль Const
+ *
+ * Содержит в себе константы
+ * @param Const.MAP_PIN_HEIGHT - высота метки (px)
+ * @param Const.MAP_PIN_HEIGHT - ширина метки (px)
+ * @param Const.MAP_PIN_MAIN_ARROW_HEIGHT - высота стрелки главной метки, необходима для вычисления размеров главной метки (px)
+ * @param Const.MAP_PIN_TOP_INITIAL - начальное положение главной метки на карте (px)
+ * @param Const.MAP_PIN_LEFT_INITIAL - начальное положение главной метки на карте (px)
+ * @param Const.MAP_PIN_TOP_MIN - ограничение области карты сверху, куда можно переместить главную метку (px)
+ * @param Const.MAP_PIN_TOP_MAX - ограничение области карты снизу, куда можно переместить главную метку (px)
+ * @param Const.OFFER_TYPE_DISPLAY_NAMES - русскоязычные названия для типов жилья
+ * @param Const.OFFER_TYPE_MIN_PRICE - минимальные цены для типов жилья
+ * @param Const.ADFORM_ROOM_CAPACITY_MAPPING - вместимость жилья взависимости от количества комнат
+ * @param Const.ADFORM_ROOM_CAPACITY_HINT - сообщения для валидации вместимости жилья
+ */
 (function () {
   window.Const = {};
 

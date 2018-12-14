@@ -1,5 +1,11 @@
 'use strict';
 
+/**
+ * Модуль Data
+ *
+ * Получение данных о похожих объявлениях
+ * @Data.mock() - генерация фиктивных данных
+ */
 (function () {
   var getRandomValueFromRange = function (min, max) {
     return Math.round(min + (max - min) * Math.random());
@@ -15,9 +21,7 @@
     });
   };
 
-  window.Data = {};
-
-  window.Data.mock = function (areaWidth) {
+  var mock = function (areaWidth) {
     var apartments = [];
 
     for (var i = 0; i < 8; i++) {
@@ -49,5 +53,9 @@
     }
 
     return apartments;
+  };
+
+  window.Data = {
+    mock: mock
   };
 })();

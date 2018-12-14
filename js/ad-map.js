@@ -1,13 +1,33 @@
 'use strict';
 
+/**
+ * Модуль AdMap
+ *
+ * Управление картой с метками
+ * @param AdMap.activate - активация карты
+ * @param AdMap.deactivate - деактивация карты
+ * @param AdMap.init - инициализация событий карты
+ */
 (function () {
-  window.AdMap = {};
 
   var map = document.querySelector('.map');
   var mapPinsArea = document.querySelector('.map__pins');
   var mapPinMain = map.querySelector('.map__pin--main');
 
-  window.AdMap.deactivate = function (callback) {
+  var activateMap = function (callback) {
+    if (window.AdMapActive) {
+      return;
+    }
+    window.AdMapActive = true;
+
+    document.querySelector('.map').classList.remove('map--faded');
+
+    if (typeof callback === 'function') {
+      callback();
+    }
+  };
+
+  var deactivateMap = function (callback) {
     if (window.AdMapActive === false) {
       return;
     }
@@ -22,20 +42,7 @@
     }
   };
 
-  window.AdMap.activate = function (callback) {
-    if (window.AdMapActive) {
-      return;
-    }
-    window.AdMapActive = true;
-
-    document.querySelector('.map').classList.remove('map--faded');
-
-    if (typeof callback === 'function') {
-      callback();
-    }
-  };
-
-  window.AdMap.init = function () {
+  var initMap = function () {
     window.AdMap.deactivate();
 
     var apartments = window.Data.mock(mapPinsArea.offsetWidth);
@@ -115,5 +122,11 @@
       document.addEventListener('mousemove', onMouseMove);
       document.addEventListener('mouseup', onMouseUp);
     });
+  };
+
+  window.AdMap = {
+    activate: activateMap,
+    deactivate: deactivateMap,
+    init: initMap
   };
 })();

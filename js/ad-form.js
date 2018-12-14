@@ -1,8 +1,15 @@
 'use strict';
 
+/**
+ * Модуль AdForm
+ *
+ * Форма ввода объявления
+ * @param AdForm.activate - активация формы, поля ввода становятся доступными
+ * @param AdForm.deactivate - деактивация формы, поля ввода становятся недоступными
+ * @param AdForm.setAddress - заполнение поля ввода адреса на основе координат главной метки
+ * @param AdForm.init - инициализация событий формы
+ */
 (function () {
-  window.AdForm = {};
-
   var adForm = document.querySelector('.ad-form');
   var addressField = adForm.querySelector('#address');
   var typeSelect = adForm.querySelector('#type');
@@ -14,7 +21,6 @@
   var adFormReset = adForm.querySelector('.ad-form__reset');
   var fieldsets = adForm.querySelectorAll('.ad-form__element');
   var headerFieldset = adForm.querySelector('.ad-form-header');
-
 
   var changeAdFormState = function (disabled) {
     if (disabled) {
@@ -30,16 +36,7 @@
     }
   };
 
-  window.AdForm.deactivate = function () {
-    if (window.adFormActive === false) {
-      return;
-    }
-    window.adFormActive = false;
-
-    changeAdFormState(true);
-  };
-
-  window.AdForm.activate = function () {
+  var activateAdForm = function () {
     if (window.adFormActive === true) {
       return;
     }
@@ -48,11 +45,20 @@
     changeAdFormState(false);
   };
 
-  window.AdForm.setAddress = function (location) {
+  var deactivateAdForm = function () {
+    if (window.adFormActive === false) {
+      return;
+    }
+    window.adFormActive = false;
+
+    changeAdFormState(true);
+  };
+
+  var setAddress = function (location) {
     addressField.value = location.x + ', ' + location.y;
   };
 
-  window.AdForm.init = function () {
+  var initAdForm = function () {
     window.AdForm.deactivate();
     window.AdForm.setAddress(window.Pin.getMainPinLocation(true));
 
@@ -96,5 +102,12 @@
       });
       window.AdForm.deactivate();
     });
+  };
+
+  window.AdForm = {
+    activate: activateAdForm,
+    deactivate: deactivateAdForm,
+    setAddress: setAddress,
+    init: initAdForm
   };
 })();

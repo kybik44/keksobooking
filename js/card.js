@@ -1,8 +1,13 @@
 'use strict';
 
+/**
+ * Модуль Card
+ *
+ * Управление карточкой с объявлением
+ * @param show - показать карточку
+ * @param hide - скрыть карточку
+ */
 (function () {
-  window.Card = {};
-
   var cardTemplate = document.querySelector('#card').content.querySelector('.popup');
 
   var initCard = function (apartment) {
@@ -67,14 +72,7 @@
     return cardElement;
   };
 
-  window.Card.hide = function () {
-    var existingMapCard = document.querySelector('.map__card');
-    if (existingMapCard) {
-      existingMapCard.remove();
-    }
-  };
-
-  window.Card.show = function (mapArea, apartment) {
+  var showCard = function (mapArea, apartment) {
     var cardElement = initCard(apartment);
 
     window.Card.hide();
@@ -85,5 +83,17 @@
     });
 
     mapArea.appendChild(cardElement);
+  };
+
+  var hideCard = function () {
+    var existingMapCard = document.querySelector('.map__card');
+    if (existingMapCard) {
+      existingMapCard.remove();
+    }
+  };
+
+  window.Card = {
+    hide: hideCard,
+    show: showCard
   };
 })();
