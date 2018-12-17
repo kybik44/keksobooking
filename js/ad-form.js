@@ -58,6 +58,12 @@
     addressField.value = location.x + ', ' + location.y;
   };
 
+  var resetFormData = function () {
+    adForm.reset();
+    typeSelect.dispatchEvent(new Event('change', {}));
+    capacitySelect.setCustomValidity('');
+  };
+
   var initAdForm = function () {
     window.AdForm.deactivate();
     window.AdForm.setAddress(window.Pin.getMainPinLocation(true));
@@ -89,17 +95,27 @@
     roomNumberSelect.addEventListener('change', validateCapacity);
     capacitySelect.addEventListener('change', validateCapacity);
 
+    adForm.addEventListener('submit', function (evt) {
+      evt.preventDefault();
+
+      var onLoad = function () {
+        window.Message.success();
+        resetFormData();
+      };
+
+      var onError = function (message) {
+        window.Message.error(message);
+      };
+
+      var data = new FormData(adForm);
+
+      window.Backend.post(data, onLoad, onError);
+    });
+
     adFormReset.addEventListener('click', function (e) {
       e.preventDefault();
-      adForm.reset();
-      typeSelect.dispatchEvent(new Event('change', {}));
-      capacitySelect.setCustomValidity('');
-
-      window.AdMap.deactivate(function () {
-        window.Pin.removePins();
-        window.Card.hide();
-        window.AdForm.setAddress(window.Pin.getMainPinLocation(true));
-      });
+      resetFormData();
+      window.AdMap.deactivate();
       window.AdForm.deactivate();
     });
   };

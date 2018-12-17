@@ -13,8 +13,9 @@
   var map = document.querySelector('.map');
   var mapPinsArea = document.querySelector('.map__pins');
   var mapPinMain = map.querySelector('.map__pin--main');
+  var apartments = [];
 
-  var activateMap = function (callback) {
+  var activateMap = function () {
     if (window.AdMapActive) {
       return;
     }
@@ -22,12 +23,20 @@
 
     document.querySelector('.map').classList.remove('map--faded');
 
-    if (typeof callback === 'function') {
-      callback();
-    }
+    var onLoad = function (data) {
+      apartments = data;
+      window.Pin.renderPins(mapPinsArea, apartments);
+      window.AdFilter.activate();
+    };
+
+    var onError = function (message) {
+      window.Message.error(message);
+    };
+
+    window.Backend.get(onLoad, onError);
   };
 
-  var deactivateMap = function (callback) {
+  var deactivateMap = function () {
     if (window.AdMapActive === false) {
       return;
     }
@@ -37,15 +46,14 @@
     mapPinMain.style.top = window.Const.MAP_PIN_TOP_INITIAL + 'px';
     mapPinMain.style.left = window.Const.MAP_PIN_LEFT_INITIAL + 'px';
 
-    if (typeof callback === 'function') {
-      callback();
-    }
+    window.Pin.removePins();
+    window.Card.hide();
+    window.AdForm.setAddress(window.Pin.getMainPinLocation(true));
+    window.AdFilter.deactivate();
   };
 
   var initMap = function () {
     window.AdMap.deactivate();
-
-    var apartments = window.Data.mock(mapPinsArea.offsetWidth);
 
     mapPinsArea.addEventListener('click', function (evt) {
       var mapPin = evt.target.closest('.map__pin:not(.map__pin--main)');
@@ -99,9 +107,7 @@
           mapPinMain.style.left = newCoords.x + 'px';
         }
 
-        window.AdMap.activate(function () {
-          window.Pin.renderPins(mapPinsArea, apartments);
-        });
+        window.AdMap.activate();
         window.AdForm.activate();
         window.AdForm.setAddress(window.Pin.getMainPinLocation());
       };
@@ -109,9 +115,7 @@
       var onMouseUp = function (upEvt) {
         upEvt.preventDefault();
 
-        window.AdMap.activate(function () {
-          window.Pin.renderPins(mapPinsArea, apartments);
-        });
+        window.AdMap.activate();
         window.AdForm.activate();
         window.AdForm.setAddress(window.Pin.getMainPinLocation());
 
@@ -123,6 +127,14 @@
       document.addEventListener('mouseup', onMouseUp);
     });
   };
+
+  mapPinMain.addEventListener('keydown', function (evt) {
+    if (evt.keyCode === window.Const.KEYCODE_ENTER) {
+      window.AdMap.activate();
+      window.AdForm.activate();
+      window.AdForm.setAddress(window.Pin.getMainPinLocation());
+    }
+  });
 
   window.AdMap = {
     activate: activateMap,

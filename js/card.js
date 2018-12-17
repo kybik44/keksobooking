@@ -11,69 +11,126 @@
   var cardTemplate = document.querySelector('#card').content.querySelector('.popup');
 
   var initCard = function (apartment) {
-    var cardElement = cardTemplate.cloneNode(true);
-    var priceElement = cardElement.querySelector('.popup__text--price');
-    var featuresElement = cardElement.querySelector('.popup__features');
-    var photosElement = cardElement.querySelector('.popup__photos');
-    var fragment = document.createDocumentFragment();
+    if (typeof apartment.offer === 'undefined') {
+      return null;
+    }
+
+    var cardElem = cardTemplate.cloneNode(true);
+    var titleElem = cardElem.querySelector('.popup__title');
+    var addressElem = cardElem.querySelector('.popup__text--address');
+    var priceElem = cardElem.querySelector('.popup__text--price');
+    var typeElem = cardElem.querySelector('.popup__type');
+    var capacityElem = cardElem.querySelector('.popup__text--capacity');
+    var timeElem = cardElem.querySelector('.popup__text--time');
+    var featuresElem = cardElem.querySelector('.popup__features');
+    var descriptionElem = cardElem.querySelector('.popup__description');
+    var photosElem = cardElem.querySelector('.popup__photos');
+    var avatarElem = cardElem.querySelector('.popup__avatar');
+    var fragment;
 
     // title
-    cardElement.querySelector('.popup__title').innerText = apartment.offer.title;
+    if (apartment.offer.title) {
+      titleElem.innerHTML = apartment.offer.title;
+    } else {
+      titleElem.remove();
+    }
 
     // address
-    cardElement.querySelector('.popup__text--address').innerText = apartment.offer.address;
+    if (apartment.offer.address) {
+      addressElem.innerText = apartment.offer.address;
+    } else {
+      addressElem.remove();
+    }
 
     // price
-    priceElement.innerHTML = '<span>/ночь</span>';
-    priceElement.insertBefore(document.createTextNode(apartment.offer.price + '₽'), priceElement.firstChild);
+    if (apartment.offer.price) {
+      priceElem.innerHTML = '<span>/ночь</span>';
+      priceElem.insertBefore(document.createTextNode(apartment.offer.price + '₽'), priceElem.firstChild);
+    } else {
+      priceElem.remove();
+    }
 
     // type
-    cardElement.querySelector('.popup__type').innerText = window.Const.OFFER_TYPE_DISPLAY_NAMES[apartment.offer.type];
+    if (apartment.offer.type) {
+      typeElem.innerText = window.Const.OFFER_TYPE_DISPLAY_NAMES[apartment.offer.type];
+    } else {
+      typeElem.remove();
+    }
 
     // capacity
-    cardElement.querySelector('.popup__text--capacity').innerText = apartment.offer.rooms + ' комнаты для ' + apartment.offer.guests + ' гостей';
+    if (apartment.offer.rooms && apartment.offer.guests) {
+      capacityElem.innerText = apartment.offer.rooms + ' комнаты для ' + apartment.offer.guests + ' гостей';
+    } else {
+      capacityElem.remove();
+    }
 
     // time
-    cardElement.querySelector('.popup__text--time').innerText = 'Заезд после ' + apartment.offer.checkin + ', выезд до ' + apartment.offer.checkout;
+    if (apartment.offer.checkin && apartment.offer.checkout) {
+      timeElem.innerText = 'Заезд после ' + apartment.offer.checkin + ', выезд до ' + apartment.offer.checkout;
+    } else {
+      timeElem.remove();
+    }
 
     // features
-    for (var i = 0; i < apartment.offer.features.length; i++) {
-      var listItem = document.createElement('li');
-      listItem.classList.add('popup__feature');
-      listItem.classList.add('popup__feature--' + apartment.offer.features[i]);
-      fragment.appendChild(listItem);
-    }
+    if (apartment.offer.features && apartment.offer.features.length) {
+      fragment = document.createDocumentFragment();
 
-    while (featuresElement.firstChild) {
-      featuresElement.removeChild(featuresElement.firstChild);
+      for (var i = 0; i < apartment.offer.features.length; i++) {
+        var listItem = document.createElement('li');
+        listItem.classList.add('popup__feature');
+        listItem.classList.add('popup__feature--' + apartment.offer.features[i]);
+        fragment.appendChild(listItem);
+      }
+
+      while (featuresElem.firstChild) {
+        featuresElem.removeChild(featuresElem.firstChild);
+      }
+      featuresElem.appendChild(fragment);
+    } else {
+      featuresElem.remove();
     }
-    featuresElement.appendChild(fragment);
 
     // description
-    cardElement.querySelector('.popup__description').innerText = apartment.offer.description;
+    if (apartment.offer.description) {
+      cardElem.querySelector('.popup__description').innerText = apartment.offer.description;
+    } else {
+      descriptionElem.remove();
+    }
 
     // photos
-    fragment = document.createDocumentFragment();
+    if (apartment.offer.photos && apartment.offer.photos.length) {
+      fragment = document.createDocumentFragment();
 
-    for (var j = 0; j < apartment.offer.photos.length; j++) {
-      var photo = photosElement.querySelector('.popup__photo').cloneNode();
-      photo.src = apartment.offer.photos[j];
-      fragment.appendChild(photo);
-    }
+      for (var j = 0; j < apartment.offer.photos.length; j++) {
+        var photo = photosElem.querySelector('.popup__photo').cloneNode();
+        photo.src = apartment.offer.photos[j];
+        fragment.appendChild(photo);
+      }
 
-    while (photosElement.firstChild) {
-      photosElement.removeChild(photosElement.firstChild);
+      while (photosElem.firstChild) {
+        photosElem.removeChild(photosElem.firstChild);
+      }
+      photosElem.appendChild(fragment);
+    } else {
+      photosElem.remove();
     }
-    photosElement.appendChild(fragment);
 
     // avatar
-    cardElement.querySelector('.popup__avatar').src = apartment.author.avatar;
+    if (apartment.author && apartment.author.avatar && !apartment.author.avatar.endsWith('default.png')) {
+      avatarElem.src = apartment.author.avatar;
+    } else {
+      avatarElem.remove();
+    }
 
-    return cardElement;
+    return cardElem;
   };
 
   var showCard = function (mapArea, apartment) {
     var cardElement = initCard(apartment);
+
+    if (cardElement === null) {
+      return;
+    }
 
     window.Card.hide();
 

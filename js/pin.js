@@ -13,13 +13,17 @@
 (function () {
   var mapPinTemplate = document.querySelector('#pin').content.querySelector('.map__pin');
 
-  var initPin = function (apartment) {
+  var initPin = function (apartment, key) {
+    if (typeof apartment.offer === 'undefined') {
+      return null;
+    }
+
     var mapPinElement = mapPinTemplate.cloneNode(true);
 
     mapPinElement.style.left = apartment.location.x - window.Const.MAP_PIN_WIDTH / 2 + 'px';
     mapPinElement.style.top = apartment.location.y - window.Const.MAP_PIN_HEIGHT + 'px';
     mapPinElement.querySelector('img').src = apartment.author.avatar;
-    mapPinElement.dataset.key = apartment.key;
+    mapPinElement.dataset.key = key;
 
     return mapPinElement;
   };
@@ -37,8 +41,10 @@
     var fragment = document.createDocumentFragment();
 
     for (var i = 0; i < apartments.length; i++) {
-      var mapPinElement = initPin(apartments[i]);
-      fragment.appendChild(mapPinElement);
+      var mapPinElement = initPin(apartments[i], i);
+      if (mapPinElement) {
+        fragment.appendChild(mapPinElement);
+      }
     }
 
     map.appendChild(fragment);

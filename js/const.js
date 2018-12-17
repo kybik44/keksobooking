@@ -19,6 +19,9 @@
 (function () {
   window.Const = {};
 
+  window.Const.KEYCODE_ENTER = 13;
+  window.Const.KEYCODE_ESC = 27;
+
   window.Const.MAP_PIN_HEIGHT = 70;
   window.Const.MAP_PIN_WIDTH = 50;
   window.Const.MAP_PIN_MAIN_ARROW_HEIGHT = 16;
@@ -26,17 +29,6 @@
   window.Const.MAP_PIN_LEFT_INITIAL = 570;
   window.Const.MAP_PIN_TOP_MIN = 130;
   window.Const.MAP_PIN_TOP_MAX = 630;
-
-  window.Const.OFFER_TITLE_EXAMPLES = [
-    'Большая уютная квартира',
-    'Маленькая неуютная квартира',
-    'Огромный прекрасный дворец',
-    'Маленький ужасный дворец',
-    'Красивый гостевой домик',
-    'Некрасивый негостеприимный домик',
-    'Уютное бунгало далеко от моря',
-    'Неуютное бунгало по колено в воде'
-  ];
 
   window.Const.OFFER_TYPE_DISPLAY_NAMES = {
     'bungalo': 'Бунгало',
@@ -51,15 +43,6 @@
     'house': 5000,
     'palace': 10000
   };
-
-  window.Const.OFFER_TIME_EXAMPLES = ['12:00', '13:00', '14:00'];
-  window.Const.OFFER_FEATURE_EXAMPLES = ['wifi', 'dishwasher', 'parking', 'washer', 'elevator', 'conditioner'];
-
-  window.Const.OFFER_PHOTO_EXAMPLES = [
-    'http://o0.github.io/assets/images/tokyo/hotel1.jpg',
-    'http://o0.github.io/assets/images/tokyo/hotel2.jpg',
-    'http://o0.github.io/assets/images/tokyo/hotel3.jpg'
-  ];
 
   window.Const.ADFORM_ROOM_CAPACITY_MAPPING = {
     '1': ['1'],
