@@ -4,8 +4,8 @@
  * Модуль Message
  *
  * Отображение пользовательских сообщений
- * @param Message.Success - информационное сообщение
- * @param Message.Error - сообщение об ошибке
+ * @param Message.success - информационное сообщение
+ * @param Message.error - сообщение об ошибке
  */
 (function () {
   var mainSection = document.querySelector('main');
@@ -20,7 +20,7 @@
     });
 
     document.addEventListener('keydown', function (evt) {
-      if (evt.keyCode === window.Const.KEYCODE_ESC) {
+      if (evt.keyCode === window.Utils.KeyCode.ESC) {
         successMessage.remove();
       }
     });
@@ -40,7 +40,7 @@
     });
 
     document.addEventListener('keydown', function (evt) {
-      if (evt.keyCode === window.Const.KEYCODE_ESC) {
+      if (evt.keyCode === window.Utils.KeyCode.ESC) {
         errorMessage.remove();
       }
     });

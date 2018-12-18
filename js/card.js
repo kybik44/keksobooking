@@ -52,7 +52,7 @@
 
     // type
     if (apartment.offer.type) {
-      typeElem.innerText = window.Const.OFFER_TYPE_DISPLAY_NAMES[apartment.offer.type];
+      typeElem.innerText = window.Utils.offerTypeToDisplayNameMap[apartment.offer.type];
     } else {
       typeElem.remove();
     }

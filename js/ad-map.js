@@ -129,7 +129,7 @@
   };
 
   mapPinMain.addEventListener('keydown', function (evt) {
-    if (evt.keyCode === window.Const.KEYCODE_ENTER) {
+    if (evt.keyCode === window.Utils.KeyCode.ENTER) {
       window.AdMap.activate();
       window.AdForm.activate();
       window.AdForm.setAddress(window.Pin.getMainPinLocation());
