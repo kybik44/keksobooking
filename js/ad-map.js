@@ -143,9 +143,9 @@
         return;
       }
 
-      var apartment = apartments.filter(function (item) {
+      var apartment = apartments.find(function (item) {
         return item.key === +mapPin.dataset.key;
-      })[0];
+      });
 
       if (apartment) {
         window.Pin.activate(mapPin, function () {
