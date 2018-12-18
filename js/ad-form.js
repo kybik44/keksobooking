@@ -69,8 +69,8 @@
     window.AdForm.setAddress(window.Pin.getMainPinLocation(true));
 
     typeSelect.addEventListener('change', function (evt) {
-      priceInput.min = window.Const.OFFER_TYPE_MIN_PRICE[evt.target.value];
-      priceInput.placeholder = window.Const.OFFER_TYPE_MIN_PRICE[evt.target.value];
+      priceInput.min = window.Utils.offerTypeToMinPriceMap[evt.target.value];
+      priceInput.placeholder = window.Utils.offerTypeToMinPriceMap[evt.target.value];
     });
 
     var syncTimeSelects = function (evt) {
@@ -83,10 +83,10 @@
     var validateCapacity = function () {
       var rooms = roomNumberSelect.value;
       var capacity = capacitySelect.value;
-      var validCapacityArray = window.Const.ADFORM_ROOM_CAPACITY_MAPPING[rooms];
+      var validCapacityArray = window.Utils.roomToCapacityMap[rooms];
 
       if (validCapacityArray.indexOf(capacity) === -1) {
-        capacitySelect.setCustomValidity(window.Const.ADFORM_ROOM_CAPACITY_HINT[rooms]);
+        capacitySelect.setCustomValidity(window.Utils.roomToCapacityHintMap[rooms]);
       } else {
         capacitySelect.setCustomValidity('');
       }
@@ -95,12 +95,18 @@
     roomNumberSelect.addEventListener('change', validateCapacity);
     capacitySelect.addEventListener('change', validateCapacity);
 
+    var reset = function () {
+      resetFormData();
+      window.AdMap.deactivate();
+      window.AdForm.deactivate();
+    };
+
     adForm.addEventListener('submit', function (evt) {
       evt.preventDefault();
 
       var onLoad = function () {
         window.Message.success();
-        resetFormData();
+        reset();
       };
 
       var onError = function (message) {
@@ -114,9 +120,7 @@
 
     adFormReset.addEventListener('click', function (e) {
       e.preventDefault();
-      resetFormData();
-      window.AdMap.deactivate();
-      window.AdForm.deactivate();
+      reset();
     });
   };
 

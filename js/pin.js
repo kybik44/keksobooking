@@ -13,7 +13,7 @@
 (function () {
   var mapPinTemplate = document.querySelector('#pin').content.querySelector('.map__pin');
 
-  var initPin = function (apartment, key) {
+  var initPin = function (apartment) {
     if (typeof apartment.offer === 'undefined') {
       return null;
     }
@@ -23,7 +23,7 @@
     mapPinElement.style.left = apartment.location.x - window.Const.MAP_PIN_WIDTH / 2 + 'px';
     mapPinElement.style.top = apartment.location.y - window.Const.MAP_PIN_HEIGHT + 'px';
     mapPinElement.querySelector('img').src = apartment.author.avatar;
-    mapPinElement.dataset.key = key;
+    mapPinElement.dataset.key = apartment.key;
 
     return mapPinElement;
   };
@@ -33,6 +33,7 @@
     for (var i = 0; i < mapPinElements.length; i++) {
       mapPinElements[i].remove();
     }
+    window.Card.hide();
   };
 
   var renderPins = function (map, apartments) {
@@ -41,7 +42,7 @@
     var fragment = document.createDocumentFragment();
 
     for (var i = 0; i < apartments.length; i++) {
-      var mapPinElement = initPin(apartments[i], i);
+      var mapPinElement = initPin(apartments[i]);
       if (mapPinElement) {
         fragment.appendChild(mapPinElement);
       }
