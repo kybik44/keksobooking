@@ -3,7 +3,7 @@
 /**
  * Модуль Utils
  *
- * Содержит вспомогательные структуры данных
+ * Содержит вспомогательные структуры данных и методы
  * @param Utils.KeyCode - коды клавиатуры
  * @param Utils.offerTypeToDisplayNameMap - русскоязычные названия для типов жилья
  * @param Utils.offerTypeToMinPriceMap - минимальные цены для типов жилья
@@ -44,5 +44,15 @@
     '2': 'В 2 комнатах может проживать 1 или 2 гостя.',
     '3': 'В 3 комнатах может проживать 1, 2 или 3 гостя.',
     '100': '100 комнат не для гостей.'
+  };
+
+  window.Utils.housingPriceToRangeMap = {
+    'low': [0, 10000],
+    'middle': [10000, 50000],
+    'high': [50000, Infinity]
+  };
+
+  window.Utils.getDistance = function (location1, location2) {
+    return Math.round(Math.sqrt(Math.pow(location2.x - location1.x, 2) + Math.pow(location2.y - location1.y, 2)));
   };
 })();

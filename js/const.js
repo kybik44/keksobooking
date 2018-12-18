@@ -11,6 +11,8 @@
  * @param Const.MAP_PIN_LEFT_INITIAL - начальное положение главной метки на карте (px)
  * @param Const.MAP_PIN_TOP_MIN - ограничение области карты сверху, куда можно переместить главную метку (px)
  * @param Const.MAP_PIN_TOP_MAX - ограничение области карты снизу, куда можно переместить главную метку (px)
+ * @param Const.MAX_NUMBER_OF_MAP_PINS - максимальное кол-во меток, отображаемых на карте
+ * @param Const.DEBOUNCE_INTERVAL - интервал для устранения дребезга (мс)
  */
 (function () {
   window.Const = {};
@@ -21,4 +23,6 @@
   window.Const.MAP_PIN_LEFT_INITIAL = 570;
   window.Const.MAP_PIN_TOP_MIN = 130;
   window.Const.MAP_PIN_TOP_MAX = 630;
+  window.Const.MAX_NUMBER_OF_MAP_PINS = 5;
+  window.Const.DEBOUNCE_INTERVAL = 500;
 })();
