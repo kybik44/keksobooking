@@ -95,12 +95,18 @@
     roomNumberSelect.addEventListener('change', validateCapacity);
     capacitySelect.addEventListener('change', validateCapacity);
 
+    var reset = function () {
+      resetFormData();
+      window.AdMap.deactivate();
+      window.AdForm.deactivate();
+    };
+
     adForm.addEventListener('submit', function (evt) {
       evt.preventDefault();
 
       var onLoad = function () {
         window.Message.success();
-        resetFormData();
+        reset();
       };
 
       var onError = function (message) {
@@ -114,9 +120,7 @@
 
     adFormReset.addEventListener('click', function (e) {
       e.preventDefault();
-      resetFormData();
-      window.AdMap.deactivate();
-      window.AdForm.deactivate();
+      reset();
     });
   };
 
