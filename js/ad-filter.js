@@ -34,8 +34,8 @@
     result.price = priceSelect.value;
     var priceRange = window.Utils.housingPriceToRangeMap[priceSelect.value];
     if (priceRange) {
-      result.minPrice = priceRange[0];
-      result.maxPrice = priceRange[1];
+      result.minPrice = priceRange.min;
+      result.maxPrice = priceRange.max;
     }
     result.rooms = roomsSelect.value;
     result.guests = guestsSelect.value;

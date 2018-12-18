@@ -47,9 +47,9 @@
   };
 
   window.Utils.housingPriceToRangeMap = {
-    'low': [0, 10000],
-    'middle': [10000, 50000],
-    'high': [50000, Infinity]
+    'low': {min: 0, max: 10000},
+    'middle': {min: 10000, max: 50000},
+    'high': {min: 50000, max: Infinity}
   };
 
   window.Utils.getDistance = function (location1, location2) {

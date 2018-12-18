@@ -66,7 +66,7 @@
       return matchingApartments;
     }
 
-    // если кол-во подходящих объявлений больше MAX_NUMBER_OF_MAP_PINS, то сортируем по расстоянию до главной метки
+    // БОНУС-ФИЧА: если кол-во подходящих объявлений больше MAX_NUMBER_OF_MAP_PINS, то сортируем по расстоянию до главной метки
     var mainPinLocation = window.Pin.getMainPinLocation();
 
     var apartmentsWithDistance = matchingApartments.map(function (apartment) {
@@ -87,8 +87,7 @@
   };
 
   var updateMap = function (filterData) {
-    var filteredApartments = filterApartments(filterData);
-    window.Pin.renderPins(mapPinsArea, filteredApartments);
+    window.Pin.renderPins(mapPinsArea, filterApartments(filterData));
   };
 
   var activateMap = function () {
