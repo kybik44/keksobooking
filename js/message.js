@@ -11,45 +11,60 @@
   var mainSection = document.querySelector('main');
   var successTemplate = document.querySelector('#success').content.querySelector('.success');
   var errorTemplate = document.querySelector('#error').content.querySelector('.error');
+  var successMessage = null;
+  var errorMessage = null;
 
   var showSuccessMessage = function () {
-    var successMessage = successTemplate.cloneNode(true);
-
-    successMessage.addEventListener('click', function () {
-      successMessage.remove();
-    });
-
-    document.addEventListener('keydown', function (evt) {
-      if (evt.keyCode === window.Utils.KeyCode.ESC) {
-        successMessage.remove();
-      }
-    });
-
+    successMessage = successTemplate.cloneNode(true);
+    successMessage.addEventListener('click', hideSuccessMessage);
     mainSection.appendChild(successMessage);
+
+    document.addEventListener('keydown', onEscSuccess);
+  };
+
+  var onEscSuccess = function (evt) {
+    if (evt.keyCode === window.Utils.KeyCode.ESC) {
+      hideSuccessMessage();
+    }
+  };
+
+  var hideSuccessMessage = function () {
+    if (successMessage === null) {
+      return;
+    }
+
+    successMessage.remove();
+    successMessage = null;
+    document.removeEventListener('keydown', onEscSuccess);
   };
 
   var showErrorMessage = function (message) {
-    var errorMessage = errorTemplate.cloneNode(true);
+    errorMessage = errorTemplate.cloneNode(true);
 
     if (message) {
       errorMessage.querySelector('.error__message').innerText = message;
     }
 
-    errorMessage.addEventListener('click', function () {
-      errorMessage.remove();
-    });
-
-    document.addEventListener('keydown', function (evt) {
-      if (evt.keyCode === window.Utils.KeyCode.ESC) {
-        errorMessage.remove();
-      }
-    });
-
-    errorMessage.querySelector('.error__button').addEventListener('click', function () {
-      errorMessage.remove();
-    });
-
+    errorMessage.addEventListener('click', hideErrorMessage);
+    errorMessage.querySelector('.error__button').addEventListener('click', hideErrorMessage);
     mainSection.appendChild(errorMessage);
+
+    document.addEventListener('keydown', onEscError);
+  };
+
+  var onEscError = function (evt) {
+    if (evt.keyCode === window.Utils.KeyCode.ESC) {
+      hideErrorMessage();
+    }
+  };
+
+  var hideErrorMessage = function () {
+    if (errorMessage === null) {
+      return;
+    }
+    errorMessage.remove();
+    errorMessage = null;
+    document.removeEventListener('keydown', onEscError);
   };
 
   window.Message = {

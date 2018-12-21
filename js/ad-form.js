@@ -36,11 +36,72 @@
     }
   };
 
+  var onTypeChange = function (evt) {
+    priceInput.min = window.Utils.offerTypeToMinPriceMap[evt.target.value];
+    priceInput.placeholder = window.Utils.offerTypeToMinPriceMap[evt.target.value];
+  };
+
+  var onTimeChange = function (evt) {
+    timeoutSelect.value = timeinSelect.value = evt.target.value;
+  };
+
+  var onRoomCapacityChange = function () {
+    var rooms = roomNumberSelect.value;
+    var capacity = capacitySelect.value;
+    var validCapacityArray = window.Utils.roomToCapacityMap[rooms];
+
+    // проверяем вместимость в зависимости от кол-ва комнат
+    if (validCapacityArray.indexOf(capacity) === -1) {
+      capacitySelect.setCustomValidity(window.Utils.roomToCapacityHintMap[rooms]);
+    } else {
+      capacitySelect.setCustomValidity('');
+    }
+  };
+
+  var reset = function () {
+    adForm.reset();
+    typeSelect.dispatchEvent(new Event('change', {}));
+    capacitySelect.setCustomValidity('');
+
+    window.AdMap.deactivate();
+    window.AdForm.deactivate();
+  };
+
+  var onResetClick = function (evt) {
+    evt.preventDefault();
+    reset();
+  };
+
+  var onSubmitForm = function (evt) {
+    evt.preventDefault();
+
+    var onLoad = function () {
+      window.Message.success();
+      reset();
+    };
+
+    var onError = function (message) {
+      window.Message.error(message);
+    };
+
+    var data = new FormData(adForm);
+
+    window.Backend.post(data, onLoad, onError);
+  };
+
   var activateAdForm = function () {
     if (window.adFormActive === true) {
       return;
     }
     window.adFormActive = true;
+
+    typeSelect.addEventListener('change', onTypeChange);
+    timeinSelect.addEventListener('change', onTimeChange);
+    timeoutSelect.addEventListener('change', onTimeChange);
+    roomNumberSelect.addEventListener('change', onRoomCapacityChange);
+    capacitySelect.addEventListener('change', onRoomCapacityChange);
+    adForm.addEventListener('submit', onSubmitForm);
+    adFormReset.addEventListener('click', onResetClick);
 
     changeAdFormState(false);
   };
@@ -52,76 +113,23 @@
     window.adFormActive = false;
 
     changeAdFormState(true);
+
+    typeSelect.removeEventListener('change', onTypeChange);
+    timeinSelect.removeEventListener('change', onTimeChange);
+    timeoutSelect.removeEventListener('change', onTimeChange);
+    roomNumberSelect.removeEventListener('change', onRoomCapacityChange);
+    capacitySelect.removeEventListener('change', onRoomCapacityChange);
+    adForm.removeEventListener('submit', onSubmitForm);
+    adFormReset.removeEventListener('click', onResetClick);
   };
 
   var setAddress = function (location) {
     addressField.value = location.x + ', ' + location.y;
   };
 
-  var resetFormData = function () {
-    adForm.reset();
-    typeSelect.dispatchEvent(new Event('change', {}));
-    capacitySelect.setCustomValidity('');
-  };
-
   var initAdForm = function () {
     window.AdForm.deactivate();
-    window.AdForm.setAddress(window.Pin.getMainPinLocation(true));
-
-    typeSelect.addEventListener('change', function (evt) {
-      priceInput.min = window.Utils.offerTypeToMinPriceMap[evt.target.value];
-      priceInput.placeholder = window.Utils.offerTypeToMinPriceMap[evt.target.value];
-    });
-
-    var syncTimeSelects = function (evt) {
-      timeoutSelect.value = timeinSelect.value = evt.target.value;
-    };
-
-    timeinSelect.addEventListener('change', syncTimeSelects);
-    timeoutSelect.addEventListener('change', syncTimeSelects);
-
-    var validateCapacity = function () {
-      var rooms = roomNumberSelect.value;
-      var capacity = capacitySelect.value;
-      var validCapacityArray = window.Utils.roomToCapacityMap[rooms];
-
-      if (validCapacityArray.indexOf(capacity) === -1) {
-        capacitySelect.setCustomValidity(window.Utils.roomToCapacityHintMap[rooms]);
-      } else {
-        capacitySelect.setCustomValidity('');
-      }
-    };
-
-    roomNumberSelect.addEventListener('change', validateCapacity);
-    capacitySelect.addEventListener('change', validateCapacity);
-
-    var reset = function () {
-      resetFormData();
-      window.AdMap.deactivate();
-      window.AdForm.deactivate();
-    };
-
-    adForm.addEventListener('submit', function (evt) {
-      evt.preventDefault();
-
-      var onLoad = function () {
-        window.Message.success();
-        reset();
-      };
-
-      var onError = function (message) {
-        window.Message.error(message);
-      };
-
-      var data = new FormData(adForm);
-
-      window.Backend.post(data, onLoad, onError);
-    });
-
-    adFormReset.addEventListener('click', function (e) {
-      e.preventDefault();
-      reset();
-    });
+    setAddress(window.Pin.getMainPinLocation(true));
   };
 
   window.AdForm = {

@@ -60,14 +60,6 @@
     }, window.Const.DEBOUNCE_INTERVAL);
   };
 
-  selectors.forEach(function (selector) {
-    selector.addEventListener('change', onFilterUpdate);
-  });
-
-  checkboxes.forEach(function (checkbox) {
-    checkbox.addEventListener('change', onFilterUpdate);
-  });
-
   var changeAdFilterState = function (disabled) {
     for (var i = 0; i < selectors.length; i++) {
       selectors[i].disabled = disabled;
@@ -82,6 +74,14 @@
     }
     window.adFilterActive = true;
 
+    selectors.forEach(function (selector) {
+      selector.addEventListener('change', onFilterUpdate);
+    });
+
+    checkboxes.forEach(function (checkbox) {
+      checkbox.addEventListener('change', onFilterUpdate);
+    });
+
     changeAdFilterState(false);
   };
 
@@ -93,6 +93,14 @@
 
     changeAdFilterState(true);
     resetFilter();
+
+    selectors.forEach(function (selector) {
+      selector.removeEventListener('change', onFilterUpdate);
+    });
+
+    checkboxes.forEach(function (checkbox) {
+      checkbox.removeEventListener('change', onFilterUpdate);
+    });
   };
 
   window.AdFilter = {

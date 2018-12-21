@@ -9,6 +9,7 @@
  */
 (function () {
   var cardTemplate = document.querySelector('#card').content.querySelector('.popup');
+  var openedCard = null;
 
   var initCard = function (apartment) {
     if (typeof apartment.offer === 'undefined') {
@@ -26,7 +27,6 @@
     var descriptionElem = cardElem.querySelector('.popup__description');
     var photosElem = cardElem.querySelector('.popup__photos');
     var avatarElem = cardElem.querySelector('.popup__avatar');
-    var fragment;
 
     // title
     if (apartment.offer.title) {
@@ -73,19 +73,14 @@
 
     // features
     if (apartment.offer.features && apartment.offer.features.length) {
-      fragment = document.createDocumentFragment();
+      featuresElem.innerHTML = '';
 
-      for (var i = 0; i < apartment.offer.features.length; i++) {
+      apartment.offer.features.forEach(function (feature) {
         var listItem = document.createElement('li');
         listItem.classList.add('popup__feature');
-        listItem.classList.add('popup__feature--' + apartment.offer.features[i]);
-        fragment.appendChild(listItem);
-      }
-
-      while (featuresElem.firstChild) {
-        featuresElem.removeChild(featuresElem.firstChild);
-      }
-      featuresElem.appendChild(fragment);
+        listItem.classList.add('popup__feature--' + feature);
+        featuresElem.appendChild(listItem);
+      });
     } else {
       featuresElem.remove();
     }
@@ -99,18 +94,14 @@
 
     // photos
     if (apartment.offer.photos && apartment.offer.photos.length) {
-      fragment = document.createDocumentFragment();
+      var photoTemplate = photosElem.querySelector('.popup__photo');
+      photosElem.innerHTML = '';
 
-      for (var j = 0; j < apartment.offer.photos.length; j++) {
-        var photo = photosElem.querySelector('.popup__photo').cloneNode();
-        photo.src = apartment.offer.photos[j];
-        fragment.appendChild(photo);
-      }
-
-      while (photosElem.firstChild) {
-        photosElem.removeChild(photosElem.firstChild);
-      }
-      photosElem.appendChild(fragment);
+      apartment.offer.photos.forEach(function (photoUrl) {
+        var photoElem = photoTemplate.cloneNode();
+        photoElem.src = photoUrl;
+        photosElem.appendChild(photoElem);
+      });
     } else {
       photosElem.remove();
     }
@@ -126,31 +117,42 @@
   };
 
   var showCard = function (mapArea, apartment) {
-    var cardElement = initCard(apartment);
+    hideCard();
 
-    if (cardElement === null) {
+    openedCard = initCard(apartment);
+
+    if (openedCard === null) {
       return;
     }
 
-    window.Card.hide();
-
-    cardElement.querySelector('.popup__close').addEventListener('click', function () {
-      window.Card.hide();
+    openedCard.querySelector('.popup__close').addEventListener('click', function () {
+      hideCard();
       window.Pin.deactivatePins();
     });
 
-    mapArea.appendChild(cardElement);
+    document.addEventListener('keydown', onEsc);
+
+    mapArea.appendChild(openedCard);
   };
 
-  var hideCard = function () {
-    var existingMapCard = document.querySelector('.map__card');
-    if (existingMapCard) {
-      existingMapCard.remove();
+  var onEsc = function (evt) {
+    if (evt.keyCode === window.Utils.KeyCode.ESC) {
+      hideCard();
+      window.Pin.deactivatePins();
     }
   };
 
+  var hideCard = function () {
+    if (openedCard === null) {
+      return;
+    }
+    openedCard.remove();
+    openedCard = null;
+    document.removeEventListener('keydown', onEsc);
+  };
+
   window.Card = {
-    hide: hideCard,
-    show: showCard
+    show: showCard,
+    hide: hideCard
   };
 })();

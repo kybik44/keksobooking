@@ -90,6 +90,23 @@
     window.Pin.renderPins(mapPinsArea, filterApartments(filterData));
   };
 
+  var onMapPinClick = function (evt) {
+    var mapPin = evt.target.closest('.map__pin:not(.map__pin--main)');
+    if (!mapPin) {
+      return;
+    }
+
+    var apartment = apartments.find(function (item) {
+      return item.key === +mapPin.dataset.key;
+    });
+
+    if (apartment) {
+      window.Pin.activate(mapPin, function () {
+        window.Card.show(mapPinsArea, apartment);
+      });
+    }
+  };
+
   var activateMap = function () {
     if (window.AdMapActive) {
       var filterDate = window.AdFilter.getData();
@@ -109,6 +126,7 @@
       });
 
       updateMap();
+      mapPinsArea.addEventListener('click', onMapPinClick);
       window.AdFilter.activate();
     };
 
@@ -129,6 +147,8 @@
     mapPinMain.style.top = window.Const.MAP_PIN_TOP_INITIAL + 'px';
     mapPinMain.style.left = window.Const.MAP_PIN_LEFT_INITIAL + 'px';
 
+    mapPinsArea.removeEventListener('click', onMapPinClick);
+
     window.Pin.removePins();
     window.AdForm.setAddress(window.Pin.getMainPinLocation(true));
     window.AdFilter.deactivate();
@@ -136,23 +156,6 @@
 
   var initMap = function () {
     window.AdMap.deactivate();
-
-    mapPinsArea.addEventListener('click', function (evt) {
-      var mapPin = evt.target.closest('.map__pin:not(.map__pin--main)');
-      if (!mapPin) {
-        return;
-      }
-
-      var apartment = apartments.find(function (item) {
-        return item.key === +mapPin.dataset.key;
-      });
-
-      if (apartment) {
-        window.Pin.activate(mapPin, function () {
-          window.Card.show(mapPinsArea, apartment);
-        });
-      }
-    });
 
     mapPinMain.addEventListener('mousedown', function (evt) {
       evt.preventDefault();
