@@ -5,6 +5,7 @@
  *
  * Содержит вспомогательные структуры данных и методы
  * @param Utils.KeyCode - коды клавиатуры
+ * @param window.Utils.HttpStatusCode - список кодов HTTP ответа
  * @param Utils.offerTypeToDisplayNameMap - русскоязычные названия для типов жилья
  * @param Utils.offerTypeToMinPriceMap - минимальные цены для типов жилья
  * @param Utils.roomCapacityMap - вместимость жилья взависимости от количества комнат
@@ -16,6 +17,10 @@
   window.Utils.KeyCode = {
     ENTER: 13,
     ESC: 27
+  };
+
+  window.Utils.HttpStatusCode = {
+    OK: 200
   };
 
   window.Utils.offerTypeToDisplayNameMap = {

@@ -7,11 +7,14 @@
  * @param Pin.removePins - удаление всех меток с карты
  * @param Pin.renderPins - отрисовка меток на карте
  * @param Pin.activate - активация метки
- * @param Pin.deactivatePins - деактивация всех меток на карте
+ * @param Pin.deactivatePin - деактивация всех меток на карте
  * @param Pin.getMainPinLocation - получение координат главной метки
  */
 (function () {
+  var mapPinMain = document.querySelector('.map__pin--main');
   var mapPinTemplate = document.querySelector('#pin').content.querySelector('.map__pin');
+  var mapPinElements = [];
+  var activeMapPin = null;
 
   var initPin = function (apartment) {
     if (typeof apartment.offer === 'undefined') {
@@ -29,9 +32,11 @@
   };
 
   var removePins = function () {
-    var mapPinElements = document.querySelectorAll('.map__pin:not(.map__pin--main)');
-    for (var i = 0; i < mapPinElements.length; i++) {
-      mapPinElements[i].remove();
+    if (mapPinElements && mapPinElements.length) {
+      mapPinElements.forEach(function (pin) {
+        pin.remove();
+      });
+      mapPinElements = [];
     }
     window.Card.hide();
   };
@@ -41,34 +46,36 @@
 
     var fragment = document.createDocumentFragment();
 
-    for (var i = 0; i < apartments.length; i++) {
-      var mapPinElement = initPin(apartments[i]);
-      if (mapPinElement) {
-        fragment.appendChild(mapPinElement);
+    apartments.forEach(function (apartment) {
+      var pin = initPin(apartment);
+      if (pin) {
+        fragment.appendChild(pin);
+        mapPinElements.push(pin);
       }
-    }
+    });
 
     map.appendChild(fragment);
   };
 
   var activatePin = function (pin, callback) {
-    window.Pin.deactivatePins();
+    deactivatePin();
     pin.classList.add('map__pin--active');
+    activeMapPin = pin;
+
     if (typeof callback === 'function') {
       callback();
     }
   };
 
-  var deactivatePins = function () {
-    var mapPinActiveElements = document.querySelectorAll('.map__pin--active');
-    for (var i = 0; i < mapPinActiveElements.length; i++) {
-      mapPinActiveElements[i].classList.remove('map__pin--active');
+  var deactivatePin = function () {
+    if (activeMapPin === null) {
+      return;
     }
+    activeMapPin.classList.remove('map__pin--active');
+    activeMapPin = null;
   };
 
   var getMainPinLocation = function (initialState) {
-    var mapPinMain = document.querySelector('.map__pin--main');
-
     var location = {
       x: Math.round(mapPinMain.offsetLeft + mapPinMain.offsetWidth / 2)
     };
@@ -87,7 +94,7 @@
     removePins: removePins,
     renderPins: renderPins,
     activate: activatePin,
-    deactivatePins: deactivatePins,
+    deactivatePin: deactivatePin,
     getMainPinLocation: getMainPinLocation
   };
 })();

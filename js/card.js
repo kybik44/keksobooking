@@ -127,7 +127,7 @@
 
     openedCard.querySelector('.popup__close').addEventListener('click', function () {
       hideCard();
-      window.Pin.deactivatePins();
+      window.Pin.deactivatePin();
     });
 
     document.addEventListener('keydown', onEsc);
@@ -138,7 +138,7 @@
   var onEsc = function (evt) {
     if (evt.keyCode === window.Utils.KeyCode.ESC) {
       hideCard();
-      window.Pin.deactivatePins();
+      window.Pin.deactivatePin();
     }
   };
 

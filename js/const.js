@@ -13,6 +13,7 @@
  * @param Const.MAP_PIN_TOP_MAX - ограничение области карты снизу, куда можно переместить главную метку (px)
  * @param Const.MAX_NUMBER_OF_MAP_PINS - максимальное кол-во меток, отображаемых на карте
  * @param Const.DEBOUNCE_INTERVAL - интервал для устранения дребезга (мс)
+ * @param Const.XHR_TIMEOUT - таймаут на ответ сервера при отправке формы объявления (мс)
  */
 (function () {
   window.Const = {};
@@ -25,4 +26,5 @@
   window.Const.MAP_PIN_TOP_MAX = 630;
   window.Const.MAX_NUMBER_OF_MAP_PINS = 5;
   window.Const.DEBOUNCE_INTERVAL = 500;
+  window.Const.XHR_TIMEOUT = 5000;
 })();
