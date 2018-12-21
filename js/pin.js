@@ -68,11 +68,9 @@
   };
 
   var deactivatePin = function () {
-    if (activeMapPin === null) {
-      return;
+    if (activeMapPin) {
+      activeMapPin.classList.remove('map__pin--active');
     }
-    activeMapPin.classList.remove('map__pin--active');
-    activeMapPin = null;
   };
 
   var getMainPinLocation = function (initialState) {

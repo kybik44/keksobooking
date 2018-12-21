@@ -120,10 +120,10 @@
     hideCard();
 
     openedCard = initCard(apartment);
-
     if (openedCard === null) {
       return;
     }
+    mapArea.appendChild(openedCard);
 
     openedCard.querySelector('.popup__close').addEventListener('click', function () {
       hideCard();
@@ -131,8 +131,6 @@
     });
 
     document.addEventListener('keydown', onEsc);
-
-    mapArea.appendChild(openedCard);
   };
 
   var onEsc = function (evt) {
@@ -143,12 +141,10 @@
   };
 
   var hideCard = function () {
-    if (openedCard === null) {
-      return;
+    if (openedCard) {
+      openedCard.remove();
+      document.removeEventListener('keydown', onEsc);
     }
-    openedCard.remove();
-    openedCard = null;
-    document.removeEventListener('keydown', onEsc);
   };
 
   window.Card = {
