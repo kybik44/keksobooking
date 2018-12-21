@@ -56,7 +56,7 @@
     }
 
     updateFilterTimeout = setTimeout(function () {
-      window.AdMap.activate();
+      window.AdMap.update(getFilterData());
     }, window.Const.DEBOUNCE_INTERVAL);
   };
 

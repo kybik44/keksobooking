@@ -6,6 +6,7 @@
  * Управление картой с метками
  * @param AdMap.activate - активация карты
  * @param AdMap.deactivate - деактивация карты
+ * @param AdMap.update - обновляет карту, перерисовывает метки
  * @param AdMap.init - инициализация событий карты
  */
 (function () {
@@ -109,8 +110,6 @@
 
   var activateMap = function () {
     if (window.AdMapActive) {
-      var filterDate = window.AdFilter.getData();
-      updateMap(filterDate);
       return;
     }
     window.AdMapActive = true;
@@ -229,6 +228,7 @@
   window.AdMap = {
     activate: activateMap,
     deactivate: deactivateMap,
+    update: updateMap,
     init: initMap
   };
 })();
